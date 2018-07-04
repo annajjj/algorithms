@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import {TweenLite, TimelineMax, Power1, TweenMax} from "gsap";
 
 @Component({
   selector: "app-root",
@@ -9,16 +10,29 @@ export class AppComponent implements OnInit {
   alphabet= new Array<Letter>();
   huffman = new Array();
   text;
+  codedText;
+
+  tl = new TimelineMax();
 
   ngOnInit(): void {
-    this.createAlphabet("AAAAABBBBCCCDDEABABA");
-    this.countFrequency('AAAAABBBBCCCDDEABABA')
-    this.countHuffman();
-    console.log(this.huffman)
+    this.tl.set(".dot1",{autoAlpha:0});
+    this.tl.set(".dot2",{autoAlpha:0});
+    this.tl.set(".dot3",{autoAlpha:0});
+
+    this.tl
+    .to('.dot1', 1, {autoAlpha:1, delay:1, repeat:-1, yoyo:true})
+    .to('.dot2', 1, {autoAlpha:1, delay:1, repeat:-1, yoyo:true})
+    .to('.dot3', 1, {autoAlpha:1, delay:1, repeat:-1, yoyo:true})
   }
 
   count(event){
-    console.log(event)
+    this.alphabet = new Array<Letter>();
+    this.huffman = new Array<Letter>();
+    
+    this.createAlphabet(this.text);
+    this.countFrequency(this.text)
+    this.countHuffman();
+    this.code(this.text);
   }
   createAlphabet(data){
     const uniqValues = new Set(data);
@@ -28,15 +42,24 @@ export class AppComponent implements OnInit {
   countFrequency(text: string) {
     this.alphabet.forEach((el, i) => {
       const reg = new RegExp(el.label, "g");
-      this.alphabet[i].propabilty = text.match(reg).length / text.length;
+      this.alphabet[i].propability = text.match(reg).length / text.length;
     });
   }
 
   countHuffman() {
-    let tmpObj = [...this.alphabet.sort((a,b) => a.propabilty - b.propabilty)];
+    let tmpObj = [...this.alphabet.sort((a,b) => a.propability - b.propability)];
     this.huffman.push(tmpObj);
+    if(this.alphabet.length == 1) this.alphabet[0].code = "1";
     for (let i = 0; Object.keys(this.huffman[this.huffman.length - 1]).length > 1; i++)
       tmpObj = [...this.createNewObj(tmpObj)];
+  }
+
+
+  code(text: string){
+    let codedText = '';
+    text.split('').forEach((letter) => codedText+= this.alphabet.find((el) => el.label == letter).code);
+
+    this.codedText = codedText;
   }
 
   private createNewObj(sortedObject) {
@@ -48,7 +71,7 @@ export class AppComponent implements OnInit {
       }
       else if (i != 1) newObj.push(new Letter(sortedObject[i].label, sortedObject[i].propabilty));
     }
-    newObj = newObj.sort((a,b) => a.propabilty -b.propabilty);
+    newObj = newObj.sort((a,b) => a.propability -b.propability);
     this.huffman.push(newObj);
     return newObj;
   }
@@ -65,18 +88,19 @@ export class AppComponent implements OnInit {
 
 export class Letter{
   label: string
-  propabilty: number
+  propability: number
   code: string
 
   constructor(label, propability?){
     this.label = label;
-    this.propabilty = propability;
+    this.propability = propability;
     this.code = "";
   }
 
   addBit(bit: 0 | 1){
     this.code = bit + this.code;
   }
+
 
 
 }

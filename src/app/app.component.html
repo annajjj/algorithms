@@ -1,8 +1,31 @@
-<input [(ngModel)]="text" (ngModelChange)="count($event)"> Add some text to code
 <div class="header">algorithms demo</div>
 
 <div class="content">
-    <div class="huffi">>Huffman coding</div><div class="dots"><div class="d1">.</div><div class="d2">.</div> .</div>
-    <input>
+    <div class="huffi" id="e">
+        <div>>Huffman coding</div>
+        <div class="dots">
+            <div class="dot1">.</div>
+            <div class="dot2">.</div>
+            <div class="dot3">.</div>
+        </div>
+    </div>
+    <div class="desc">code</div>
+    
+    <div class="main-wrapper">
+        
+        <div class="textarea-border"><textarea [(ngModel)]="text" (ngModelChange)="count($event)"></textarea> 
+<!--         
+            <div class="textarea-border-effect-v"></div>
+            <div class="textarea-border-effect-h"></div> -->
 
+        </div>
+        
+        <div class="results">
+            <div class="letter" *ngFor="let letter of alphabet">{{letter.label}} {{letter.propability}} {{letter.code}}</div>
+        </div>
+        
+        <div class="coded">{{codedText}}
+        </div>
+
+</div>
 </div>
